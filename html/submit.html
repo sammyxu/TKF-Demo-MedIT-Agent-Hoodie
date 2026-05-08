@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Submit Activity — TFOM Student Ambassador</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset & Tokens ──────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue:        #1E3765;
+      --blue-dark:   #162A52;
+      --teal:        #007894;
+      --magenta:     #AB1368;
+      --lime:        #8DBF2E;
+      --yellow:      #F1C500;
+      --sky:         #6FC7EA;
+
+      --tint-sky:    #EAF4F8;
+      --tint-blue:   #EEF1F8;
+      --tint-lime:   #EEF7E0;
+      --tint-yellow: #FFF8DC;
+      --tint-mag:    #FDE8F0;
+
+      --gray-50:  #F8FAFC;
+      --gray-100: #F1F5F9;
+      --gray-200: #E5E7EB;
+      --gray-300: #D1D5DB;
+      --gray-400: #9CA3AF;
+      --gray-500: #6B7280;
+      --gray-600: #4B5563;
+      --gray-900: #111827;
+
+      --shadow-sm: 0 1px 3px rgba(30,55,101,0.08);
+      --shadow-md: 0 4px 12px rgba(30,55,101,0.10);
+      --shadow-lg: 0 8px 24px rgba(30,55,101,0.14);
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+
+      --sidebar-w: 240px;
+      --navbar-h:  64px;
+      --tabbar-h:  64px;
+      --font: 'Barlow', Arial, sans-serif;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* ── Base ───────────────────────────────────────────────────── */
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--gray-900);
+      background: var(--gray-50);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    h1, h2, h3 { font-weight: 800; color: var(--blue); line-height: 1.2; }
+    a { color: var(--teal); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    button, input, textarea, select { font-family: var(--font); }
+
+    /* ── Skip link ──────────────────────────────────────────────── */
+    .skip-link {
+      position: absolute; top: -100px; left: 16px;
+      background: white; color: var(--blue);
+      padding: 10px 18px; border-radius: var(--radius-sm);
+      font-weight: 700; font-size: 14px;
+      box-shadow: var(--shadow-lg); z-index: 9999;
+      transition: top 0.15s;
+    }
+    .skip-link:focus { top: 16px; }
+
+    /* ── Navbar ─────────────────────────────────────────────────── */
+    .navbar {
+      position: fixed; top: 0; left: 0; right: 0; height: var(--navbar-h);
+      background: var(--blue);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px; z-index: 100;
+      box-shadow: 0 2px 12px rgba(30,55,101,0.25);
+    }
+    .navbar-brand {
+      display: flex; align-items: center; gap: 12px; text-decoration: none;
+    }
+    .navbar-logo-mark {
+      height: 36px; display: flex; align-items: center; flex-shrink: 0;
+    }
+    .navbar-logo-mark img { height: 36px; width: auto; display: block; }
+    .navbar-wordmark {
+      display: flex; flex-direction: column; line-height: 1.1;
+    }
+    .navbar-wordmark span:first-child {
+      font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.65);
+      letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .navbar-wordmark span:last-child {
+      font-size: 15px; font-weight: 800; color: white; letter-spacing: -0.01em;
+    }
+    .navbar-user {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .navbar-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--teal), var(--sky));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 800; color: white; flex-shrink: 0;
+    }
+    .navbar-username {
+      font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.90);
+      display: none;
+    }
+    @media (min-width: 640px) { .navbar-username { display: block; } }
+    .btn-signout {
+      font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.70);
+      background: rgba(255,255,255,0.10); border-radius: 6px;
+      padding: 6px 12px; cursor: pointer; border: none;
+      transition: background 0.15s, color 0.15s; min-height: 32px;
+    }
+    .btn-signout:hover { background: rgba(255,255,255,0.18); color: white; }
+
+    /* ── Layout shell ───────────────────────────────────────────── */
+    .app-shell {
+      display: flex;
+      padding-top: var(--navbar-h);
+      min-height: 100vh;
+    }
+
+    /* ── Sidebar ────────────────────────────────────────────────── */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: white;
+      border-right: 1px solid var(--gray-200);
+      position: fixed;
+      top: var(--navbar-h); bottom: 0; left: 0;
+      overflow-y: auto;
+      padding: 24px 12px;
+      display: none; flex-direction: column; gap: 4px;
+    }
+    @media (min-width: 768px) { .sidebar { display: flex; } }
+
+    .sidebar-label {
+      font-size: 10px; font-weight: 700; color: var(--gray-400);
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 0 8px; margin-bottom: 4px; margin-top: 16px;
+    }
+    .sidebar-label:first-child { margin-top: 0; }
+
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; border-radius: var(--radius-sm);
+      font-size: 14px; font-weight: 600; color: var(--gray-600);
+      text-decoration: none; min-height: 44px;
+      transition: background 0.15s, color 0.15s;
+      position: relative;
+    }
+    .nav-item:hover { background: var(--tint-sky); color: var(--blue); text-decoration: none; }
+    .nav-item.active {
+      background: var(--tint-blue); color: var(--blue);
+    }
+    .nav-item.active::before {
+      content: ''; position: absolute; left: 0; top: 6px; bottom: 6px;
+      width: 3px; background: var(--teal); border-radius: 0 3px 3px 0;
+    }
+    .nav-item svg { flex-shrink: 0; }
+    .nav-item.active svg { color: var(--teal); }
+
+    /* ── Main ───────────────────────────────────────────────────── */
+    .main {
+      flex: 1;
+      margin-left: 0;
+      padding: 32px 16px;
+      padding-bottom: calc(var(--tabbar-h) + 24px);
+    }
+    @media (min-width: 768px) {
+      .main { margin-left: var(--sidebar-w); padding: 40px 40px; padding-bottom: 48px; }
+    }
+
+    /* ── Page header ────────────────────────────────────────────── */
+    .page-header {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 28px;
+      animation: fadeUp 0.3s ease-out both;
+    }
+    .back-btn {
+      display: flex; align-items: center; justify-content: center;
+      width: 36px; height: 36px; border-radius: var(--radius-sm);
+      color: var(--gray-500); background: white;
+      box-shadow: var(--shadow-sm); text-decoration: none;
+      transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+      flex-shrink: 0;
+    }
+    .back-btn:hover { background: var(--tint-sky); color: var(--blue); box-shadow: var(--shadow-md); text-decoration: none; }
+    .page-title { font-size: 28px; font-weight: 900; color: var(--blue); letter-spacing: -0.02em; }
+    @media (min-width: 640px) { .page-title { font-size: 32px; } }
+
+    /* ── Cap info strip ─────────────────────────────────────────── */
+    .cap-strip {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--tint-blue); border-radius: var(--radius-sm);
+      padding: 10px 16px; margin-bottom: 24px; font-size: 13px;
+      color: var(--blue);
+      animation: fadeUp 0.3s ease-out 0.05s both;
+    }
+    .cap-strip svg { flex-shrink: 0; color: var(--teal); }
+    .cap-strip strong { font-weight: 700; }
+
+    /* ── Form card ──────────────────────────────────────────────── */
+    .form-wrap {
+      max-width: 640px;
+      animation: fadeUp 0.35s ease-out 0.1s both;
+    }
+    .form-card {
+      background: white; border-radius: var(--radius-md);
+      box-shadow: var(--shadow-md); overflow: hidden;
+    }
+
+    /* Form card header */
+    .form-card-header {
+      padding: 24px 28px 20px;
+      border-bottom: 1px solid var(--gray-100);
+      background: linear-gradient(135deg, rgba(30,55,101,0.03), rgba(0,120,148,0.04));
+    }
+    .form-card-header h2 {
+      font-size: 18px; font-weight: 800; color: var(--blue); margin-bottom: 4px;
+    }
+    .form-card-header p {
+      font-size: 13px; color: var(--gray-500); line-height: 1.5;
+    }
+
+    /* Form body */
+    .form-body { padding: 28px; display: flex; flex-direction: column; gap: 22px; }
+
+    /* Field group */
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    }
+    @media (max-width: 480px) { .field-row { grid-template-columns: 1fr; } }
+
+    label {
+      font-size: 13px; font-weight: 700; color: var(--blue);
+      display: flex; align-items: center; gap: 4px;
+    }
+    .required-mark { color: var(--magenta); font-weight: 900; }
+    .field-hint { font-size: 12px; color: var(--gray-400); margin-top: -2px; }
+
+    /* Inputs */
+    .input, .textarea, .select-input {
+      width: 100%;
+      border: 1.5px solid var(--gray-300);
+      border-radius: var(--radius-sm);
+      padding: 11px 14px;
+      font-size: 15px; font-family: var(--font);
+      color: var(--gray-900);
+      background: white;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      min-height: 44px;
+      appearance: none;
+    }
+    .input::placeholder, .textarea::placeholder { color: var(--gray-400); }
+    .input:focus, .textarea:focus, .select-input:focus {
+      outline: none;
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(0,120,148,0.18);
+    }
+    .input[aria-invalid="true"], .textarea[aria-invalid="true"] {
+      border-color: var(--magenta);
+      box-shadow: 0 0 0 3px rgba(171,19,104,0.14);
+    }
+    .textarea { resize: vertical; min-height: 96px; line-height: 1.55; }
+
+    /* Hours input with unit label */
+    .input-with-unit {
+      display: flex; align-items: stretch;
+      border: 1.5px solid var(--gray-300); border-radius: var(--radius-sm);
+      overflow: hidden;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      min-height: 44px;
+    }
+    .input-with-unit:focus-within {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(0,120,148,0.18);
+    }
+    .input-with-unit.error {
+      border-color: var(--magenta);
+      box-shadow: 0 0 0 3px rgba(171,19,104,0.14);
+    }
+    .unit-input {
+      flex: 1; border: none; padding: 11px 14px;
+      font-size: 15px; font-family: var(--font); color: var(--gray-900);
+      background: white; min-width: 0;
+    }
+    .unit-input:focus { outline: none; }
+    .unit-label {
+      display: flex; align-items: center; padding: 0 14px;
+      font-size: 13px; font-weight: 600; color: var(--gray-400);
+      background: var(--gray-50); border-left: 1px solid var(--gray-200);
+      white-space: nowrap;
+    }
+
+    /* Error messages */
+    .field-error {
+      display: none; font-size: 12px; color: var(--magenta);
+      font-weight: 600; align-items: center; gap: 4px;
+    }
+    .field-error.visible { display: flex; }
+
+    /* Character counter */
+    .char-counter {
+      font-size: 11px; color: var(--gray-400); text-align: right; margin-top: -4px;
+    }
+    .char-counter.warn { color: #B45309; font-weight: 600; }
+
+    /* Divider */
+    .form-divider {
+      height: 1px; background: var(--gray-100); margin: 4px 0;
+    }
+
+    /* ── Error & success banners ─────────────────────────────── */
+    .banner {
+      display: none; align-items: flex-start; gap: 12px;
+      padding: 12px 16px; border-radius: var(--radius-sm);
+      font-size: 14px; line-height: 1.5; margin-bottom: 20px;
+    }
+    .banner.visible { display: flex; }
+    .banner svg { flex-shrink: 0; margin-top: 1px; }
+    .banner strong { font-weight: 700; }
+    .banner-error {
+      background: var(--tint-mag); border-left: 4px solid var(--magenta); color: #6B0032;
+    }
+    .banner-success {
+      background: var(--tint-lime); border-left: 4px solid var(--lime); color: #3A5200;
+    }
+    .banner-dup {
+      background: var(--tint-yellow); border-left: 4px solid var(--yellow); color: #7A6000;
+    }
+
+    /* ── Form footer & submit ───────────────────────────────── */
+    .form-footer {
+      padding: 20px 28px 28px;
+      border-top: 1px solid var(--gray-100);
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .btn-submit {
+      width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
+      background: linear-gradient(135deg, var(--blue), var(--teal));
+      color: white; font-size: 15px; font-weight: 800; font-family: var(--font);
+      padding: 14px 24px; border: none; border-radius: 10px; min-height: 52px; cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0,120,148,0.28);
+      transition: filter 0.15s, transform 0.15s, box-shadow 0.15s;
+      letter-spacing: 0.01em;
+    }
+    .btn-submit:hover:not(:disabled) {
+      filter: brightness(1.08); transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(0,120,148,0.35);
+    }
+    .btn-submit:active:not(:disabled) { transform: translateY(0); }
+    .btn-submit:disabled {
+      opacity: 0.55; cursor: not-allowed; transform: none;
+    }
+    .submit-meta {
+      font-size: 12px; color: var(--gray-400); text-align: center; line-height: 1.5;
+    }
+    .submit-meta svg { display: inline; vertical-align: middle; margin-right: 3px; }
+
+    /* Spinner */
+    .spinner {
+      width: 18px; height: 18px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.35);
+      border-top-color: white;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+    .btn-submit.loading .spinner { display: block; }
+    .btn-submit.loading .btn-text { display: none; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Info aside ─────────────────────────────────────────── */
+    .info-aside {
+      margin-top: 20px; background: white;
+      border-radius: var(--radius-md); box-shadow: var(--shadow-sm);
+      padding: 20px 22px;
+    }
+    .info-aside h3 {
+      font-size: 13px; font-weight: 800; color: var(--blue);
+      text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px;
+    }
+    .info-list { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+    .info-list li {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-size: 13px; color: var(--gray-600); line-height: 1.5;
+    }
+    .info-list li svg { flex-shrink: 0; margin-top: 2px; color: var(--teal); }
+
+    /* ── Tabbar ─────────────────────────────────────────────── */
+    .tabbar {
+      position: fixed; bottom: 0; left: 0; right: 0; height: var(--tabbar-h);
+      background: white; border-top: 1px solid var(--gray-200);
+      display: flex; align-items: stretch; z-index: 100;
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    @media (min-width: 768px) { .tabbar { display: none; } }
+
+    .tab-item {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 3px;
+      text-decoration: none; color: var(--gray-400);
+      font-size: 11px; font-weight: 700; min-height: 44px;
+      transition: color 0.15s;
+    }
+    .tab-item:hover { color: var(--gray-600); text-decoration: none; }
+    .tab-item.active { color: var(--blue); }
+
+    /* ── Animations ─────────────────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Utility ─────────────────────────────────────────────── */
+    .sr-only { position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0 }
+  </style>
+</head>
+<body>
+
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- ── Navbar ─────────────────────────────────────────────── -->
+  <header class="navbar" role="banner">
+    <a href="/dashboard" class="navbar-brand" aria-label="TFOM Student Ambassador — Home">
+      <div class="navbar-logo-mark">
+        <img
+          src="https://temertymedicine.utoronto.ca/sites/default/files/assets/logo/Temerty_Faculty_of_Medicine-logo.svg"
+          alt="Temerty Faculty of Medicine"
+        />
+      </div>
+      <div class="navbar-wordmark">
+        <span>Ambassador System</span>
+      </div>
+    </a>
+    <div class="navbar-user">
+      <div class="navbar-avatar" aria-hidden="true">JD</div>
+      <span class="navbar-username">Jane Doe</span>
+      <button class="btn-signout" aria-label="Sign out">Sign out</button>
+    </div>
+  </header>
+
+  <!-- ── App shell ──────────────────────────────────────────── -->
+  <div class="app-shell">
+
+    <!-- ── Sidebar ───────────────────────────────────────────── -->
+    <nav class="sidebar" aria-label="Student navigation">
+      <span class="sidebar-label">Student</span>
+      <a href="/dashboard" class="nav-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+          <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+        </svg>
+        Dashboard
+      </a>
+      <a href="/submit" class="nav-item active" aria-current="page">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/>
+        </svg>
+        Submit Activity
+      </a>
+      <a href="/rewards" class="nav-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="20 12 20 22 4 22 4 12"/>
+          <rect x="2" y="7" width="20" height="5"/>
+          <line x1="12" y1="22" x2="12" y2="7"/>
+          <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/>
+          <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
+        </svg>
+        Rewards
+      </a>
+    </nav>
+
+    <!-- ── Main ──────────────────────────────────────────────── -->
+    <main class="main" id="main-content" tabindex="-1">
+
+      <!-- Page header -->
+      <div class="page-header">
+        <a href="/dashboard" class="back-btn" aria-label="Back to dashboard">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+        </a>
+        <h1 class="page-title">Submit Activity</h1>
+      </div>
+
+      <!-- Point balance strip -->
+      <div class="cap-strip" role="note" aria-label="Current point balance">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        Your balance: <strong>17.5 pts</strong> &nbsp;·&nbsp; 7.5 pts remaining this year &nbsp;·&nbsp; Annual cap: 25 pts
+      </div>
+
+      <div class="form-wrap">
+
+        <!-- Error / duplicate / success banners (shown via JS) -->
+        <div class="banner banner-error" role="alert" id="banner-error">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/>
+          </svg>
+          <span id="banner-error-text"><strong>Submission failed.</strong> Please check the form and try again.</span>
+        </div>
+
+        <div class="banner banner-dup" role="alert" id="banner-dup">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          <span><strong>Duplicate submission.</strong> A submission for this activity on this date already exists in the system.</span>
+        </div>
+
+        <!-- Form card -->
+        <div class="form-card">
+
+          <div class="form-card-header">
+            <h2>Activity Details</h2>
+            <p>Log a volunteer activity to earn points toward your reward balance. All fields marked <span style="color:var(--magenta);font-weight:800">*</span> are required.</p>
+          </div>
+
+          <form id="submission-form" novalidate>
+            <div class="form-body">
+
+              <!-- Activity name -->
+              <div class="field">
+                <label for="activityName">
+                  Activity Name
+                  <span class="required-mark" aria-hidden="true">*</span>
+                  <span class="sr-only">(required)</span>
+                </label>
+                <input
+                  class="input"
+                  type="text"
+                  id="activityName"
+                  name="activityName"
+                  required
+                  aria-required="true"
+                  minlength="2"
+                  maxlength="100"
+                  placeholder="e.g. Open House Volunteer"
+                  autocomplete="off"
+                />
+                <div class="field-error" id="activityName-error" role="alert">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                  <span></span>
+                </div>
+              </div>
+
+              <!-- Date and hours (side by side on wider screens) -->
+              <div class="field-row">
+
+                <!-- Activity date -->
+                <div class="field">
+                  <label for="activityDate">
+                    Activity Date
+                    <span class="required-mark" aria-hidden="true">*</span>
+                    <span class="sr-only">(required)</span>
+                  </label>
+                  <input
+                    class="input"
+                    type="date"
+                    id="activityDate"
+                    name="activityDate"
+                    required
+                    aria-required="true"
+                  />
+                  <div class="field-error" id="activityDate-error" role="alert">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                    <span></span>
+                  </div>
+                </div>
+
+                <!-- Hours worked -->
+                <div class="field">
+                  <label for="hoursWorked">
+                    Hours Worked
+                    <span class="required-mark" aria-hidden="true">*</span>
+                    <span class="sr-only">(required)</span>
+                  </label>
+                  <div class="input-with-unit" id="hours-wrap">
+                    <input
+                      class="unit-input"
+                      type="number"
+                      id="hoursWorked"
+                      name="hoursWorked"
+                      required
+                      aria-required="true"
+                      min="0.5"
+                      max="24"
+                      step="0.5"
+                      placeholder="0.5"
+                      aria-describedby="hoursWorked-hint hoursWorked-error"
+                    />
+                    <span class="unit-label" aria-hidden="true">hrs</span>
+                  </div>
+                  <p class="field-hint" id="hoursWorked-hint">Increments of 0.5 · max 24</p>
+                  <div class="field-error" id="hoursWorked-error" role="alert">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                    <span></span>
+                  </div>
+                </div>
+
+              </div>
+
+              <div class="form-divider"></div>
+
+              <!-- Description -->
+              <div class="field">
+                <label for="description">
+                  Description
+                  <span style="font-size:11px;font-weight:500;color:var(--gray-400);margin-left:4px;">(optional)</span>
+                </label>
+                <textarea
+                  class="textarea"
+                  id="description"
+                  name="description"
+                  maxlength="500"
+                  rows="3"
+                  placeholder="Briefly describe what you did during this activity…"
+                  aria-describedby="description-counter"
+                ></textarea>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px;">
+                  <div></div>
+                  <p class="char-counter" id="description-counter" aria-live="polite">0 / 500</p>
+                </div>
+              </div>
+
+            </div><!-- end form-body -->
+
+            <!-- Form footer -->
+            <div class="form-footer">
+              <button type="submit" class="btn-submit" id="submit-btn">
+                <div class="spinner" aria-hidden="true"></div>
+                <span class="btn-text">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:inline;vertical-align:middle;margin-right:6px;margin-top:-2px"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>
+                  Submit Activity
+                </span>
+              </button>
+              <p class="submit-meta">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                Submissions are reviewed by an administrator. Points are awarded upon approval.
+              </p>
+            </div>
+          </form>
+        </div><!-- end form-card -->
+
+        <!-- Info aside -->
+        <aside class="info-aside" aria-label="Submission guidelines">
+          <h3>Before you submit</h3>
+          <ul class="info-list">
+            <li>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+              Each approved submission earns 1 point per hour worked.
+            </li>
+            <li>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+              You can earn a maximum of <strong>25 points</strong> per academic year.
+            </li>
+            <li>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+              Duplicate submissions (same activity + date) will be rejected automatically.
+            </li>
+            <li>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              Admin review typically takes up to 5 business days.
+            </li>
+          </ul>
+        </aside>
+
+      </div><!-- end form-wrap -->
+    </main>
+  </div><!-- end app-shell -->
+
+  <!-- ── Bottom tab bar (mobile) ─────────────────────────────── -->
+  <nav class="tabbar" aria-label="Mobile navigation">
+    <a href="/dashboard" class="tab-item">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+        <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+      </svg>
+      Dashboard
+    </a>
+    <a href="/submit" class="tab-item active" aria-current="page">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/>
+      </svg>
+      Submit
+    </a>
+    <a href="/rewards" class="tab-item">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="20 12 20 22 4 22 4 12"/>
+        <rect x="2" y="7" width="20" height="5"/>
+        <line x1="12" y1="22" x2="12" y2="7"/>
+        <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/>
+        <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
+      </svg>
+      Rewards
+    </a>
+  </nav>
+
+  <script>
+    // ── Set date max to today ─────────────────────────────────────
+    const dateInput = document.getElementById('activityDate');
+    dateInput.max = new Date().toISOString().split('T')[0];
+
+    // ── Character counter ─────────────────────────────────────────
+    const descField = document.getElementById('description');
+    const counter   = document.getElementById('description-counter');
+    descField.addEventListener('input', () => {
+      const len = descField.value.length;
+      counter.textContent = `${len} / 500`;
+      counter.classList.toggle('warn', len > 450);
+    });
+
+    // ── Hours — add error style to wrapper ────────────────────────
+    const hoursInput = document.getElementById('hoursWorked');
+    const hoursWrap  = document.getElementById('hours-wrap');
+    hoursInput.addEventListener('blur', () => {
+      const v = parseFloat(hoursInput.value);
+      const bad = isNaN(v) || v < 0.5 || v > 24;
+      hoursWrap.classList.toggle('error', bad && hoursInput.value !== '');
+    });
+    hoursInput.addEventListener('input', () => {
+      hoursWrap.classList.remove('error');
+    });
+
+    // ── Field validation helper ───────────────────────────────────
+    function showFieldError(id, msg) {
+      const el = document.getElementById(id + '-error');
+      const input = document.getElementById(id);
+      el.querySelector('span').textContent = msg;
+      el.classList.add('visible');
+      input.setAttribute('aria-invalid', 'true');
+      input.setAttribute('aria-describedby', id + '-error');
+    }
+    function clearFieldError(id) {
+      const el = document.getElementById(id + '-error');
+      const input = document.getElementById(id);
+      el.classList.remove('visible');
+      input.removeAttribute('aria-invalid');
+    }
+
+    // Clear errors on input
+    ['activityName','activityDate','hoursWorked'].forEach(id => {
+      document.getElementById(id).addEventListener('input', () => clearFieldError(id));
+    });
+
+    // ── Form validation & submit ──────────────────────────────────
+    const form   = document.getElementById('submission-form');
+    const btn    = document.getElementById('submit-btn');
+    const errBanner = document.getElementById('banner-error');
+    const dupBanner = document.getElementById('banner-dup');
+
+    function hideBanners() {
+      errBanner.classList.remove('visible');
+      dupBanner.classList.remove('visible');
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideBanners();
+
+      const name  = document.getElementById('activityName').value.trim();
+      const date  = document.getElementById('activityDate').value;
+      const hours = parseFloat(document.getElementById('hoursWorked').value);
+      const desc  = document.getElementById('description').value.trim();
+
+      // Validate
+      let valid = true;
+      if (!name || name.length < 2) {
+        showFieldError('activityName', 'Activity name must be at least 2 characters.');
+        valid = false;
+      }
+      if (!date) {
+        showFieldError('activityDate', 'Please select the date of the activity.');
+        valid = false;
+      } else if (date > new Date().toISOString().split('T')[0]) {
+        showFieldError('activityDate', 'Activity date cannot be in the future.');
+        valid = false;
+      }
+      if (isNaN(hours) || hours < 0.5 || hours > 24) {
+        showFieldError('hoursWorked', 'Enter between 0.5 and 24 hours.');
+        hoursWrap.classList.add('error');
+        valid = false;
+      }
+      if (!valid) {
+        // Focus the first invalid field
+        const firstInvalid = form.querySelector('[aria-invalid="true"]');
+        if (firstInvalid) firstInvalid.focus();
+        return;
+      }
+
+      // Loading state
+      btn.disabled = true;
+      btn.classList.add('loading');
+      btn.setAttribute('aria-busy', 'true');
+
+      // Simulate API call (replace with real fetch in Next.js)
+      await new Promise(r => setTimeout(r, 1400));
+
+      // Demo: show duplicate error for a specific combo, otherwise success
+      const isDuplicate = (name.toLowerCase().includes('open house') && date === new Date().toISOString().split('T')[0]);
+
+      btn.disabled = false;
+      btn.classList.remove('loading');
+      btn.removeAttribute('aria-busy');
+
+      if (isDuplicate) {
+        dupBanner.classList.add('visible');
+        dupBanner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      } else {
+        // In Next.js: router.push('/dashboard?submitted=true')
+        // For demo: show inline success state
+        document.querySelector('.form-card').insertAdjacentHTML('beforebegin',
+          `<div class="banner banner-success visible" role="status" aria-live="polite" style="margin-bottom:20px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+            <span><strong>Activity submitted!</strong> It is now pending admin review. Redirecting to dashboard…</span>
+          </div>`
+        );
+        form.reset();
+        counter.textContent = '0 / 500';
+        setTimeout(() => {
+          window.location.href = '/dashboard';
+        }, 2200);
+      }
+    });
+  </script>
+</body>
+</html>

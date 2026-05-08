@@ -1,0 +1,25 @@
+Building prompt
+
+
+== Demo Build Prompt 10-20 mins == 
+
+As a senior developer, and based on poc.md
+and the native claude code SKILLS included in this project, 
+build this into a NextJS app (proof-of-concept) 
+for the dashboard and student entry page. Use sub-agents (agent.md).
+
+
+== Full Build Prompt ~60 mins ==
+
+You are a senior developer. Build the complete 
+TFOM Student Ambassador System — a U of T Temerty Faculty of Medicine 
+web app that replaces the current Google Forms + Sheets workflow 
+for student volunteer activities, point tracking, 
+and reward redemption.
+
+Source of truth, in precedence order:
+
+docs/prd.md — functional + non-functional requirements, business rules
+docs/code.md — stack, project layout, API surface, point engine, RBAC
+docs/ui.md + html/dashboard.html + html/submit.html — visual + styling (preserve <style> blocks verbatim)
+docs/plan.md — sequencing only, not requirements
