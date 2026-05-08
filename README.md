@@ -17,7 +17,7 @@ Students log activities, earn points (capped at 25/year), admins approve, and st
 | [`.claude/skills/`](.claude/skills/) | Claude Code skills — `html-to-nextjs`, `uoft-web-styling` |
 | [`prompt.txt`](prompt.txt) | Two ready-to-use build prompts (POC ~10–20 min, full ~60 min) |
 | [`CLAUDE.md`](CLAUDE.md) | Repo-level guidance for Claude Code sessions |
-| [`videos/`](videos/) | Final product demo recording |
+| [`videos/`](videos/) | Final product demo recording | Build process recording can be found here: https://utoronto-my.sharepoint.com/:v:/g/personal/sam_xu_utoronto_ca/IQDna5e57e5oQ7QrKO61QjMWAWB1IgK2ZHCItcUFneaL9Fs?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=WLrZzB
 
 ---
 
